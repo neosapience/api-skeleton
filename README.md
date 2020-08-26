@@ -19,7 +19,7 @@
     & make test && make logs
     ```
 
-### developer service up
+### service up
 ```
 & make up
 ```
