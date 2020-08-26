@@ -1,0 +1,38 @@
+FROM python:3.6.11-alpine3.12 as builder
+
+RUN apk update && apk add --no-cach \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    && rm -rf /var/cache/apk/*
+
+RUN pip install gevent firebase-admin
+WORKDIR /tmp/python
+RUN cp -r /usr/local/lib/python3.6/site-packages ./
+
+
+FROM python:3.6.11-alpine3.12
+COPY --from=builder /tmp/python/site-packages /usr/local/lib/python3.6/site-packages
+
+WORKDIR /opt/code
+RUN pip install --no-cache-dir \
+  gunicorn[gevent] \
+  Flask \
+  Flask-Cors \
+  pyjwt \
+  Flask-PyMongo \
+  celery \
+  redis \
+  flower \
+  pymongo \
+  pytest \
+  requests \
+  boto3 \
+  shortuuid \
+  flask_restplus \
+  firebase-admin
+
+RUN apk add tzdata \
+    && cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime \
+    && echo "Asia/Seoul" > /etc/timezone \
+    && apk del tzdata

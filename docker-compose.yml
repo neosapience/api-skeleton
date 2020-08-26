@@ -1,0 +1,42 @@
+version: '3.7'
+
+volumes:
+  mgo-data:
+    driver: local
+  mgo-config:
+    driver: local
+
+services:
+  mongo:
+    image: mongo:4.0.20-xenial
+    volumes:
+      - mgo-data:/data/db
+      - mgo-config:/data/configdb
+
+  redis:
+    image: redis:alpine
+
+  api: 
+    image: neosapience/appname-api:dev
+    env_file: 
+      - api.env
+    depends_on:
+      - mongo
+      - redis
+
+  worker:
+    image: neosapience/appname-api:dev
+    command: celery -A task worker
+    env_file: 
+      - api.env
+    depends_on:
+      - redis
+
+  mongo-express:
+    image: mongo-express
+
+  worker_monitor:
+    image: neosapience/appname-api:dev
+    command: "celery -A task flower"
+    env_file: 
+      - api.env
