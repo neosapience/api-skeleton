@@ -1,4 +1,4 @@
-FROM python:3.6.11-alpine3.12 as builder
+FROM python:3.9.12-alpine3.14 as builder
 
 RUN apk update && apk add --no-cach \
     build-base \
@@ -8,11 +8,11 @@ RUN apk update && apk add --no-cach \
 
 RUN pip install gevent firebase-admin
 WORKDIR /tmp/python
-RUN cp -r /usr/local/lib/python3.6/site-packages ./
+RUN cp -r /usr/local/lib/python3.9/site-packages ./
 
 
-FROM python:3.6.11-alpine3.12
-COPY --from=builder /tmp/python/site-packages /usr/local/lib/python3.6/site-packages
+FROM python:3.9.12-alpine3.14
+COPY --from=builder /tmp/python/site-packages /usr/local/lib/python3.9/site-packages
 
 WORKDIR /opt/code
 RUN pip install --no-cache-dir \
@@ -30,7 +30,8 @@ RUN pip install --no-cache-dir \
   boto3 \
   shortuuid \
   flask_restplus \
-  firebase-admin
+  firebase-admin \
+  dnspython
 
 RUN apk add tzdata \
     && cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime \

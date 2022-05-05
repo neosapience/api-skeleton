@@ -9,7 +9,7 @@ services:
     volumes:
       - ./api:/opt/code
     ports:
-      - 5000:5000
+      - 5000
 
   worker:
     volumes:
